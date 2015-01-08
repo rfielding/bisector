@@ -3,8 +3,9 @@ package libbisect
 type Outcome string
 
 const (
-	Pass Outcome = "p"
-	Fail Outcome = "f"
+	Pass         Outcome = "p"
+	Fail         Outcome = "f"
+	Undetermined Outcome = "u"
 )
 
 type BisectState struct {
@@ -18,7 +19,10 @@ func GetOutcome(v string) Outcome {
 	if v == "p" {
 		return Pass
 	}
-	return Fail
+	if v == "f" {
+		return Fail
+	}
+	return Undetermined
 }
 
 func NewBisectState() BisectState {
