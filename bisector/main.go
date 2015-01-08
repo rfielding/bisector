@@ -10,9 +10,9 @@ import "libbisect"
 
 func bisectWrite(bs libbisect.BisectState, mid int) {
 	if bs.IsDone(mid) {
-		fmt.Println("a", bs.Low, bs.LowAction, bs.High, bs.HighAction)
+		fmt.Println("a", bs.Low, bs.LowOutcome, bs.High, bs.HighOutcome)
 	} else {
-		fmt.Println("s", mid, bs.Low, bs.LowAction, bs.High, bs.HighAction)
+		fmt.Println("s", mid, bs.Low, bs.LowOutcome, bs.High, bs.HighOutcome)
 	}
 }
 
@@ -30,13 +30,14 @@ func main() {
 
 			if cmd == "n" && len(tokens) == 5 {
 				low, _ := strconv.Atoi(tokens[1])
-				lowAction := tokens[2]
+				lowOutcome := libbisect.GetOutcome(tokens[2])
 				high, _ := strconv.Atoi(tokens[3])
-				highAction := tokens[4]
-				bs.Begin(low, lowAction, high, highAction)
+				highOutcome := libbisect.GetOutcome(tokens[4])
+				bs.Begin(low, lowOutcome, high, highOutcome)
 				bisectWrite(bs, bs.GetMid())
 			} else if cmd == "p" || cmd == "f" {
-				bs.Result(bs.GetMid(), cmd)
+				midOutcome := libbisect.GetOutcome(cmd)
+				bs.Result(bs.GetMid(), midOutcome)
 				bisectWrite(bs, bs.GetMid())
 			} else if cmd == "q" {
 				running = false

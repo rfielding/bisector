@@ -1,34 +1,48 @@
 package libbisect
 
+type Outcome string
+
+const (
+	Pass Outcome = "p"
+	Fail Outcome = "f"
+)
+
 type BisectState struct {
-	Low        int
-	LowAction  string
-	High       int
-	HighAction string
+	Low         int
+	LowOutcome  Outcome
+	High        int
+	HighOutcome Outcome
+}
+
+func GetOutcome(v string) Outcome {
+	if v == "p" {
+		return Pass
+	}
+	return Fail
 }
 
 func NewBisectState() BisectState {
-	return BisectState{0, "p", 100, "f"}
+	return BisectState{0, Pass, 100, Fail}
 }
 
-func (this *BisectState) Begin(low int, lowAction string, high int, highAction string) {
+func (this *BisectState) Begin(low int, lowOutcome Outcome, high int, highOutcome Outcome) {
 	this.Low = low
-	this.LowAction = lowAction
+	this.LowOutcome = lowOutcome
 	this.High = high
-	this.HighAction = highAction
+	this.HighOutcome = highOutcome
 }
 
 func (this *BisectState) GetMid() int {
 	return (this.Low + this.High) / 2
 }
 
-func (this *BisectState) Result(mid int, midAction string) {
-	if midAction == this.LowAction {
+func (this *BisectState) Result(mid int, midOutcome Outcome) {
+	if midOutcome == this.LowOutcome {
 		this.Low = mid
-		this.LowAction = midAction
-	} else if midAction == this.HighAction {
+		this.LowOutcome = midOutcome
+	} else if midOutcome == this.HighOutcome {
 		this.High = mid
-		this.HighAction = midAction
+		this.HighOutcome = midOutcome
 	}
 }
 
