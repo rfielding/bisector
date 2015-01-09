@@ -38,15 +38,15 @@ func handlersPoll(ui *UIState) (bool, *UIState) {
 
 	if t == termbox.EventKey && k == termbox.KeyEsc {
 		return false, ui
-	}
-
-	if t == termbox.EventResize {
+	} else if t == termbox.EventResize {
 		redraw(ui)
 		return true, ui
-	}
-
-	if isArrow(t, k) {
+	} else if isArrow(t, k) {
 		ui = respond(k, ui)
+		redraw(ui)
+		return true, ui
+	} else if isAlgebraChar(ev) {
+		ui.V = ev.Ch
 		redraw(ui)
 		return true, ui
 	}
@@ -58,6 +58,25 @@ func setup() {
 	termbox.SetInputMode(termbox.InputCurrent)
 	termbox.SetOutputMode(termbox.OutputNormal)
 	termbox.Sync()
+}
+
+func isAlgebraChar(ev termbox.Event) bool {
+	return isGrouping(ev) || isBinOp(ev) || isToken(ev)
+}
+
+func isGrouping(ev termbox.Event) bool {
+	t, c, k := ev.Type, ev.Ch, ev.Key
+	return (t == termbox.EventKey) && ((c == 0 && (k == termbox.KeySpace)) || ((c == 0) && (k == termbox.KeyEnter)) || ('(' == c) || (')' == c))
+}
+
+func isBinOp(ev termbox.Event) bool {
+	t, c := ev.Type, ev.Ch
+	return (t == termbox.EventKey) && (('/' == c) || ('=' == c) || ('*' == c) || ('+' == c) || ('-' == c) || ('^' == c) || ('.' == c) || ('_' == c) || ('>' == c) || ('<' == c))
+}
+
+func isToken(ev termbox.Event) bool {
+	t, c := ev.Type, ev.Ch
+	return (t == termbox.EventKey) && (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9'))
 }
 
 func isArrow(t termbox.EventType, k termbox.Key) bool {
